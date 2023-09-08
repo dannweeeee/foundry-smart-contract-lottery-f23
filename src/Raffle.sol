@@ -18,6 +18,11 @@ contract Raffle is
     error Raffle__NotEnoughEthSent(); // name the error with a prefix with 2 underscores to avoid conflict with other contracts
     error Raffle__TransferFailed();
     error Raffle__RaffleNotOpen();
+    error Raffle__UpkeepNotNeeded(
+        uint256 currentBalance,
+        uint256 numPlayers,
+        uint256 raffleState
+    ); // if can be RaffleState raffleState or uint256 raffleState (because enum have indexes)
 
     /** Type Declarations */
     enum RaffleState {
@@ -73,6 +78,7 @@ contract Raffle is
         s_lastTimeStamp = block.timestamp; // when we launch this contract, we will basically start the clock
     }
 
+    // Makes sure people buy their tickets with the entrance fee and adds them to the players array
     function enterRaffle() external payable {
         // external is more gas efficient, and we probably don't have any function in this contract that calls it && ticket price being native curency, so function need to be payable
         // require(msg.value >= i_entranceFee, "Not enough ETH sent"); // require statements are less gas efficient than errors
@@ -90,22 +96,50 @@ contract Raffle is
         emit EnteredRaffle(msg.sender);
     }
 
+    //When is the winner supposed to be picked?
+    /**
+     * @dev This is the function that the Chainlink Automation Nodes call to see if it's time to perform an upkeep.
+     * The following should be true for this to return true:
+     * 1. THe time interval has passed between raffle runs
+     * 2. The raffle is in the OPEN state
+     * 3. The contract has ETH (aka, players)
+     * 4. (Implicit) The subscription is funded with LINK
+     */
+    // Therefore, boolean returns true if all conditions are met, otherwise it will return false
+    function checkUpKeep(
+        bytes memory /* checkData */
+    ) public view returns (bool upkeepNeeded, bytes memory /* performData */) {
+        bool timeHasPassed = (block.timestamp - s_lastTimeStamp) >= i_interval; // block.timestamp is a global variable that is in seconds
+        bool isOpen = RaffleState.OPEN == s_raffleState;
+        bool hasBalance = address(this).balance > 0;
+        bool hasPlayers = s_players.length > 0;
+        upkeepNeeded = (timeHasPassed && isOpen && hasBalance && hasPlayers);
+        return (upkeepNeeded, "0x0"); // return the bytes memory as empty
+    }
+
+    // Chainlink Nodes in a decentralised context will call this performUpKeep function which will kick off a request to the Chainlink VRF
     // 1. Get a random number
     // 2. Use the random number to pick a player
     // 3. Be automatically called
-    function pickWinner() external {
+    function performUpkeep(bytes calldata /* performData */) external {
+        (bool upkeepNeeded, ) = checkUpKeep(""); // check if it is time to do an UpKeep
+        if (!upkeepNeeded) {
+            revert Raffle__UpkeepNotNeeded(
+                address(this).balance,
+                s_players.length,
+                uint256(s_raffleState)
+            );
+        }
         // check to see if enough time has passed
+
         // e.g. 1000 - 500 = 500 but interval was 600 seconds
         // e.g. 1200 - 500 = 700 which is more than 600 seconds interval
-        if ((block.timestamp - s_lastTimeStamp) <= i_interval) {
-            // block.timestamp is a global variable that is in seconds
-            revert();
-        }
+
         // Before we send the request, we are going to set the Raffle State to CALCULATING
         s_raffleState = RaffleState.CALCULATING;
         // 1. Request the RNG
         // 2. Get the random number
-        uint256 requestId = i_vrfCoordinator.requestRandomWords( // the Chainlink VRF Coordinator has this function requestRandomWords()
+        i_vrfCoordinator.requestRandomWords( // the Chainlink VRF Coordinator has this function requestRandomWords()
             i_gasLane, // gas lane
             i_subscriptionId, // id that will be funded with LINK
             REQUEST_CONFIRMATIONS, // number of block confirmations
@@ -114,10 +148,15 @@ contract Raffle is
         );
     }
 
+    // Wait a while, once the Chainlink Nodes responds, it will respond with this fulfillRandomWords, pick a random winner and reset everything
+    // Coding Style: Checks, Effects, Interactions --> Helps to stay Secure and Safe
     function fulfillRandomWords(
-        uint256 requestId,
+        uint256 /* requestId */,
         uint256[] memory randomWords
     ) internal override {
+        // Checks e.g. Requires or If -> Errors (Start with Checks because it is more gas efficient)
+
+        // Effects (Effect our own contract)
         // s_players = 10
         // rng = 12
         // 12 % 10 = 2 <- whoever is index 2 in the randomWords array will be the winner
@@ -125,18 +164,18 @@ contract Raffle is
         address payable winner = s_players[indexOfWinner];
         s_recentWinner = winner;
         s_raffleState = RaffleState.OPEN;
-
         // reset the players array, we don't want the new players to get into the lottery for free
         // reset the timer as well
         s_players = new address payable[](0); // we want to reset the array to 0 length
         s_lastTimeStamp = block.timestamp; // reset the timer
 
+        emit PickedWinner(winner);
+
+        // Interactions (Interact with other contracts)
         (bool success, ) = winner.call{value: address(this).balance}("");
         if (!success) {
             revert Raffle__TransferFailed();
         }
-
-        emit PickedWinner(winner);
     }
 
     /** Getter Functions */
