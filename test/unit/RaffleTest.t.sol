@@ -38,7 +38,8 @@ contract RaffleTest is Test {
             gasLane,
             subscriptionId,
             callbackGasLimit,
-            link
+            link,
+
         ) = helperConfig.activeNetworkConfig();
         vm.deal(PLAYER, STARTING_USER_BALANCE);
     }
@@ -168,11 +169,11 @@ contract RaffleTest is Test {
         raffle.performUpkeep("");
     }
 
-    function testPerformUpkeepRevertsIfCheckUpkeepIsFalse() public {
+    function testPerformUpkeepRevertsIfCheckUpkeepIsFalse() public skipFork {
         // Arrange
         uint256 currentBalance = 0;
         uint256 numPlayers = 0;
-        uint256 raffleState = 0; // OPEN state = 0
+        Raffle.RaffleState rState = raffle.getRaffleState();
 
         // Act / Assert
         vm.expectRevert(
@@ -180,7 +181,7 @@ contract RaffleTest is Test {
                 Raffle.Raffle__UpkeepNotNeeded.selector,
                 currentBalance,
                 numPlayers,
-                raffleState
+                rState
             )
         ); // need to make sure it is also reverting its parameters
         raffle.performUpkeep(""); // expect this to fail with the following parameters in the revert message
@@ -221,9 +222,17 @@ contract RaffleTest is Test {
     // fulfillRandomWords //
     ////////////////////////
 
+    modifier skipFork() {
+        // only run on local chain Anvil and not when we are fork testing
+        if (block.chainid != 31337) {
+            return;
+        }
+        _;
+    }
+
     function testFulfillRandomWordsCanOnlyBeCalledOnlyAfterPerformUpkeep(
         uint256 randomRequestId
-    ) public raffleEnteredAndTimePassed {
+    ) public raffleEnteredAndTimePassed skipFork {
         // Arrange -> try to have the mock call fulfillRandomWords and fail
         vm.expectRevert("nonexistent request");
         VRFCoordinatorV2Mock(vrfCoordinator).fulfillRandomWords( // we should expect this to fail because no matter what, performUpkeep has to be called first
@@ -235,6 +244,7 @@ contract RaffleTest is Test {
     function testFulfillRandomWordsPicksAWinnerResetsAndSendsMoney()
         public
         raffleEnteredAndTimePassed
+        skipFork
     {
         // this will be our full test
         // we will enter the lottery a couple of times
