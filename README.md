@@ -1,6 +1,6 @@
 # Foundry Smart Contract Lottery
 
-A Foundry Fund Me Project that is part of Cyfrin Solidity Blockchain Course.
+A Foundry Smart Contract Lottery Project that is part of Cyfrin Solidity Blockchain Course.
 <br/>
 * [Deployed on Sepolia Testnet](https://sepolia.etherscan.io/address/0x0c1d28e2d4880c287938c3b7da08bae20c336234)
 
