@@ -2,8 +2,7 @@
 
 A Foundry Fund Me Project that is part of Cyfrin Solidity Blockchain Course.
 <br/>
-<br/>
-[Deployed on Sepolia Testnet](https://sepolia.etherscan.io/address/0x0c1d28e2d4880c287938c3b7da08bae20c336234)
+* [Deployed on Sepolia Testnet](https://sepolia.etherscan.io/address/0x0c1d28e2d4880c287938c3b7da08bae20c336234)
 
 ## About
 
