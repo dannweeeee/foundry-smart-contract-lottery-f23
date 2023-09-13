@@ -1,7 +1,8 @@
 # Foundry Smart Contract Lottery
 
 A Foundry Fund Me Project that is part of Cyfrin Solidity Blockchain Course. <br/>
-Deployed on Sepolia Testnet [https://sepolia.etherscan.io/address/0x0c1d28e2d4880c287938c3b7da08bae20c336234]
+Deployed on Sepolia Testnet: <br>
+https://sepolia.etherscan.io/address/0x0c1d28e2d4880c287938c3b7da08bae20c336234
 
 ## About
 
@@ -16,14 +17,6 @@ This code is to create a random smart contract lottery.
 3. Using Chainlink VRF & Chainlink Automation
 * Chainlink VRF -> Randomness
 * Chainlink Automation -> Time-based trigger
-
-## Tests
-
-1. Write some deploy scripts
-2. Write our tests
-* Work on a local chain
-* Forked Testnnet
-* Forked Mainnet
 
 # Getting Started
 
@@ -64,10 +57,6 @@ This will default to your local node. You need to have it running in another ter
 ```
 make deploy
 ```
-
-## Deploy - Other Network
-
-[See below](#deployment-to-a-testnet-or-mainnet)
 
 ## Testing
 
@@ -125,8 +114,6 @@ This will setup a ChainlinkVRF Subscription for you. If you already have one, up
 [You can follow the documentation if you get lost.](https://docs.chain.link/chainlink-automation/compatible-contracts)
 
 Go to [automation.chain.link](https://automation.chain.link/new) and register a new upkeep. Choose `Custom logic` as your trigger mechanism for automation. Your UI will look something like this once completed:
-
-![Automation](./img/automation.png)
 
 ## Scripts
 
