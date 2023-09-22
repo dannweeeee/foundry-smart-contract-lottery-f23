@@ -30,7 +30,7 @@ This code is to create a random smart contract lottery.
 ## Quickstart
 
 ```
-git clone https://github.com/Cyfrin/foundry-smart-contract-lottery-f23
+git clone https://github.com/dannweeeee/foundry-smart-contract-lottery-f23
 cd foundry-smart-contract-lottery-f23
 forge build
 ```
