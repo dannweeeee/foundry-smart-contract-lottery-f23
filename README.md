@@ -4,11 +4,11 @@ A Foundry Smart Contract Lottery Project that is part of Cyfrin Solidity Blockch
 <br/>
 * [Deployed on Sepolia Testnet](https://sepolia.etherscan.io/address/0x0c1d28e2d4880c287938c3b7da08bae20c336234)
 
-## About
+### About
 
 This code is to create a random smart contract lottery.
 
-## What we want it to do?
+### What we want it to do?
 
 1. Users can enter by paying for a ticket
 * The ticket fees are going to go to the winner during the draw
@@ -18,31 +18,31 @@ This code is to create a random smart contract lottery.
 * Chainlink VRF -> Randomness
 * Chainlink Automation -> Time-based trigger
 
-# Getting Started
+## Getting Started
 
-## Requirements
+### Requirements
 
 - [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
   - You'll know you did it right if you can run `git --version` and you see a response like `git version x.x.x`
 - [foundry](https://getfoundry.sh/)
   - You'll know you did it right if you can run `forge --version` and you see a response like `forge 0.2.0 (816e00b 2023-03-16T00:05:26.396218Z)`
 
-## Quickstart
+### Quickstart
 
 ```
 git clone https://github.com/dannweeeee/foundry-smart-contract-lottery-f23
 cd foundry-smart-contract-lottery-f23
 forge build
 ```
-# Usage
+## Usage
 
-## Start a local node
+### Start a local node
 
 ```
 make anvil
 ```
 
-## Library
+### Library
 
 If you're having a hard time installing the chainlink library, you can optionally run this command. 
 
@@ -50,7 +50,7 @@ If you're having a hard time installing the chainlink library, you can optionall
 forge install smartcontractkit/chainlink-brownie-contracts@0.6.1 --no-commit
 ```
 
-## Deploy
+### Deploy
 
 This will default to your local node. You need to have it running in another terminal in order for it to deploy.
 
@@ -58,7 +58,7 @@ This will default to your local node. You need to have it running in another ter
 make deploy
 ```
 
-## Testing
+### Testing
 
 We talk about 4 test tiers in the video.
 
@@ -79,13 +79,13 @@ or
 forge test --fork-url $SEPOLIA_RPC_URL
 ```
 
-### Test Coverage
+#### Test Coverage
 
 ```
 forge coverage
 ```
 
-# Deployment to a testnet or mainnet
+## Deployment to a testnet or mainnet
 
 1. Setup environment variables
 
@@ -115,7 +115,7 @@ This will setup a ChainlinkVRF Subscription for you. If you already have one, up
 
 Go to [automation.chain.link](https://automation.chain.link/new) and register a new upkeep. Choose `Custom logic` as your trigger mechanism for automation. Your UI will look something like this once completed:
 
-## Scripts
+### Scripts
 
 After deploying to a testnet or local net, you can run the scripts.
 
@@ -131,7 +131,7 @@ or, to create a ChainlinkVRF Subscription:
 make createSubscription ARGS="--network sepolia"
 ```
 
-## Estimate gas
+### Estimate gas
 
 You can estimate how much gas things cost by running:
 
@@ -141,7 +141,7 @@ forge snapshot
 
 And you'll see an output file called `.gas-snapshot`
 
-# Formatting
+## Formatting
 
 To run code formatting:
 
